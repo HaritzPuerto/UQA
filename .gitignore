@@ -1,2 +1,5 @@
-
 .ipynb_checkpoints/Regularization-checkpoint.ipynb
+__pycache__
+BERTQG/models/bert-base-uncased/pytorch_model.bin
+BERTQG/models/lm*
+BERTQG/models/uqa*
