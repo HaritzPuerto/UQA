@@ -3,3 +3,7 @@ __pycache__
 BERTQG/models/bert-base-uncased/pytorch_model.bin
 BERTQG/models/lm*
 BERTQG/models/uqa*
+.ipynb_checkpoints/README-checkpoint.md
+.ipynb_checkpoints/Regularization_module-checkpoint.py
+BERTQG/.ipynb_checkpoints/modeling-checkpoint.py
+BERTQG/.ipynb_checkpoints/token_generation-checkpoint.py
