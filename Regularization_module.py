@@ -167,4 +167,23 @@ class Regularizer_Discriminator:
         )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
         qi_class = qi_class[0]  # For now, let's assume batch = 1
         return qi_class
+    
+    def __convert2squad(self, context: str, answer: str, ans_start: int,  question: str) -> dict:
+        '''
+        Create a SQuAD instance
+        Inputs:
+            - context: paragrah
+            - answer
+            - ans_start
+            - question: might not be the full question (we are generating questions token by token)
+        Returns:
+            - squad instance
+        '''
+        squad = {'data': [], 'version': '1.0'}
+        squad['data'].append({'paragraphs': [{'title': 'title', 
+                                              'context': context,
+                                              'qas': [{'answers': [{'answer_start': ans_start, 'text': answer}],
+                                                       'question': question,
+                                                       'id': 0}]}]})
+        return squad
 
