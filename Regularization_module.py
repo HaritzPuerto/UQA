@@ -138,7 +138,9 @@ class Regularizer_Discriminator:
             torch.load(self.output_model_file, map_location="cpu")
         )
         self.model.to(self.device)
-    def predict_class(self, context, ans, ans_start, question_text):
+    def predict_class(self, context, ans, ans_start, question_text, list_token_classes):
+        if len(list_token_classes) == 0:
+            return np.random.choice(2, 1, p=[0.5, 0.5])[0]
         jsonobj = self.__convert2squad(context, ans, ans_start, question_text)
         dataset_pred, _ = data_gen_fun_from_jsonobj(
             jsonobj,
@@ -154,9 +156,9 @@ class Regularizer_Discriminator:
         pred_data = TensorDataset(pred_id, pred_mask, pred_seg)
         pred_sampler = SequentialSampler(pred_data)
         pred_dataloader = DataLoader(pred_data, sampler=pred_sampler, batch_size=10)
-        pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
+        #pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
         result_list = []
-        for batch in pred_epoch_iterator:
+        for batch in pred_dataloader:
             batch = tuple(t.to(self.device) for t in batch)
             result = self.model.forward_prob(batch[0], batch[1], batch[2])
             result_list += result
