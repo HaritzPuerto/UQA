@@ -168,7 +168,7 @@ class Regularizer_Discriminator:
             qi_probs, axis=1
         )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
         qi_class = qi_class[0]  # For now, let's assume batch = 1
-        return qi_class
+        return 1 - qi_class #0: UQA, 1: LM -> 0: choose LM, 1: choose UQA
     
     def __convert2squad(self, context: str, answer: str, ans_start: int,  question: str) -> dict:
         '''
