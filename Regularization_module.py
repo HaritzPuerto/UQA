@@ -180,8 +180,7 @@ class Regularizer_Discriminator:
             - squad instance
         '''
         squad = {'data': [], 'version': '1.0'}
-        squad['data'].append({'paragraphs': [{'title': 'title', 
-                                              'context': context,
+        squad['data'].append({'title': 'title', 'paragraphs': [{'context': context,
                                               'qas': [{'answers': [{'answer_start': ans_start, 'text': answer}],
                                                        'question': question,
                                                        'id': 0}]}]})
