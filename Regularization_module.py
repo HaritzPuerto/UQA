@@ -138,6 +138,7 @@ class Regularizer_Discriminator:
             torch.load(self.output_model_file, map_location="cpu")
         )
         self.model.to(self.device)
+        self.model.eval()
     def predict_class(self, context, ans, ans_start, question_text, list_token_classes):
         if len(list_token_classes) == 0:
             return np.random.choice(2, 1, p=[0.5, 0.5])[0]
