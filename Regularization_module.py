@@ -164,7 +164,7 @@ class Regularizer_Discriminator:
             result_list += result
         qi_probs = np.asarray(result_list)
         # qi_probs: [batchsize,2] ndarray
-        qi_class = np.argmin(
+        qi_class = np.argmax(
             qi_probs, axis=1
         )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
         qi_class = qi_class[0]  # For now, let's assume batch = 1
