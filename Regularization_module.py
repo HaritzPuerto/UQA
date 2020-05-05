@@ -138,7 +138,10 @@ class Regularizer_Discriminator:
             torch.load(self.output_model_file, map_location="cpu")
         )
         self.model.to(self.device)
-    def predict_class(self, context, ans, ans_start, question_text):
+        self.model.eval()
+    def predict_class(self, context, ans, ans_start, question_text, list_token_classes):
+        if len(list_token_classes) == 0:
+            return np.random.choice(2, 1, p=[0.5, 0.5])[0]
         jsonobj = self.__convert2squad(context, ans, ans_start, question_text)
         dataset_pred, _ = data_gen_fun_from_jsonobj(
             jsonobj,
@@ -154,17 +157,35 @@ class Regularizer_Discriminator:
         pred_data = TensorDataset(pred_id, pred_mask, pred_seg)
         pred_sampler = SequentialSampler(pred_data)
         pred_dataloader = DataLoader(pred_data, sampler=pred_sampler, batch_size=10)
-        pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
+        #pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
         result_list = []
-        for batch in pred_epoch_iterator:
+        for batch in pred_dataloader:
             batch = tuple(t.to(self.device) for t in batch)
             result = self.model.forward_prob(batch[0], batch[1], batch[2])
             result_list += result
         qi_probs = np.asarray(result_list)
         # qi_probs: [batchsize,2] ndarray
-        qi_class = np.argmin(
+        qi_class = np.argmax(
             qi_probs, axis=1
         )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
         qi_class = qi_class[0]  # For now, let's assume batch = 1
-        return qi_class
+        return 1 - qi_class #0: UQA, 1: LM -> 0: choose LM, 1: choose UQA
+    
+    def __convert2squad(self, context: str, answer: str, ans_start: int,  question: str) -> dict:
+        '''
+        Create a SQuAD instance
+        Inputs:
+            - context: paragrah
+            - answer
+            - ans_start
+            - question: might not be the full question (we are generating questions token by token)
+        Returns:
+            - squad instance
+        '''
+        squad = {'data': [], 'version': '1.0'}
+        squad['data'].append({'title': 'title', 'paragraphs': [{'context': context,
+                                              'qas': [{'answers': [{'answer_start': ans_start, 'text': answer}],
+                                                       'question': question,
+                                                       'id': 0}]}]})
+        return squad
 
