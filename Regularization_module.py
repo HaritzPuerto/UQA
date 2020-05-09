@@ -14,13 +14,14 @@ from transformers import (
     AutoModelForQuestionAnswering,
     AutoTokenizer,
     get_linear_schedule_with_warmup,
-    squad_convert_examples_to_features,
+    #squad_convert_examples_to_features,
 )
-from transformers.data.processors.squad import (
-    SquadResult,
-    SquadV1Processor,
-    SquadV2Processor,
-)
+from squadprocessor import squad_convert_examples_to_features,SquadResult,SquadV1Processor,SquadV2Processor
+#from transformers.data.processors.squad import (
+    #SquadResult,
+    #SquadV1Processor,
+    #SquadV2Processor,
+#)
 from torch.utils.data import TensorDataset, DataLoader, RandomSampler, SequentialSampler
 import torch
 import torch.nn as nn
