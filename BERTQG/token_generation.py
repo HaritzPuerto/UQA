@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
-from .tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
-from .modeling import BertForGenerativeSeq
+from tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
+from modeling import BertForGenerativeSeq
 import collections
 import logging
 import os
@@ -314,7 +314,7 @@ def generate_token(model, tokenizer, device, context, question_text, answer, ans
     label_pos = features[0].label_pos
     
     predictions = model(input_ids[0].unsqueeze(0), segment_ids[0].unsqueeze(0), input_mask[0].unsqueeze(0))
-    probabilities = F.log_softmax(predictions[0][label_pos], 0).detach().cpu() # vocab size (30522)
+    probabilities = F.softmax(predictions[0][label_pos], 0).detach().cpu() # vocab size (30522)
          
     predicted_index = torch.argmax(probabilities).item()
     # score = probabilities[predicted_index].item()
@@ -322,4 +322,4 @@ def generate_token(model, tokenizer, device, context, question_text, answer, ans
     predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])
     predicted_text = predicted_token[0]
 
-    return predicted_text, predicted_index, probabilities
+    return predicted_text, predicted_index, probabilities.tolist()

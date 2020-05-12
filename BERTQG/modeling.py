@@ -30,9 +30,10 @@ import shutil
 import numpy as np
 import torch
 from torch import nn
-from torch.nn import CrossEntropyLoss, Softmax
+from torch.nn import CrossEntropyLoss, KLDivLoss, Softmax
+from torch.functional import F
 
-from .file_utils import cached_path
+from file_utils import cached_path
 
 logger = logging.getLogger(__name__)
 
@@ -1171,13 +1172,26 @@ class BertForGenerativeSeq(PreTrainedBertModel):
         self.cls = BertOnlyMLMHead(config, self.bert.embeddings.word_embeddings.weight)
         self.apply(self.init_bert_weights)
 
-    def forward(self, input_ids, token_type_ids=None, attention_mask=None, masked_lm_labels=None):
-
+    def forward(self, input_ids, token_type_ids=None, attention_mask=None, masked_lm_labels=None, top_k_indices=None, top_k_probs=None):
         sequence_output, _ = self.bert(input_ids, token_type_ids, attention_mask,
                                        output_all_encoded_layers=False)
         prediction_scores = self.cls(sequence_output)
+
+        if top_k_indices is not None: # soft target
+            batch_size = prediction_scores.size(0)
+            device = prediction_scores.device
+            soft_targets = torch.zeros(batch_size, self.config.vocab_size, device=device)
+            soft_targets[torch.arange(batch_size, device=device).unsqueeze(1), top_k_indices] = top_k_probs
+            qi_indices = torch.argmax(masked_lm_labels, dim=1) # (B, )
+            prediction_scores = prediction_scores[torch.arange(batch_size, device=device), qi_indices] # extract only for idx of [MASK] ([B, S, V] -> [B, V])
+            loss_fct = KLDivLoss(reduction="batchmean")
+            masked_lm_loss = loss_fct(
+                F.log_softmax(prediction_scores, dim=-1),
+                soft_targets # not log scale
+            )
+            return masked_lm_loss
         
-        if masked_lm_labels is not None:
+        if masked_lm_labels is not None: # hard target
             loss_fct = CrossEntropyLoss(ignore_index = -1)
             masked_lm_loss = loss_fct(prediction_scores.view(-1, self.config.vocab_size), masked_lm_labels.view(-1))
             return masked_lm_loss
