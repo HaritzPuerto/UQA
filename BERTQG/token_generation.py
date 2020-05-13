@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
-from tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
-from modeling import BertForGenerativeSeq
+from .tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
+from .modeling import BertForGenerativeSeq
 import collections
 import logging
 import os
