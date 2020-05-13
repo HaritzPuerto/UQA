@@ -1,7 +1,7 @@
 import torch
 import torch.nn.functional as F
-from tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
-from modeling import BertForGenerativeSeq
+from .tokenization import whitespace_tokenize, BasicTokenizer, BertTokenizer
+from .modeling import BertForGenerativeSeq
 import collections
 import logging
 import os
@@ -296,7 +296,9 @@ def load_model(bert_model, trained_model):
 
     return model, tokenizer, device
 
-def generate_token(model, tokenizer, device, context, question_text, answer, answer_start):
+def generate_token(model, tokenizer, device, wh_word, list_qi_idx, context, question_text, answer, answer_start):
+    # penalize repetition token inside QG (need to input question history: list_qi_idx)
+
     data = read_data(context=context, answer=answer, answer_start=answer_start)
 
     features = convert_data_to_features(  
@@ -312,14 +314,45 @@ def generate_token(model, tokenizer, device, context, question_text, answer, ans
     segment_ids = torch.tensor([f.segment_ids for f in features], dtype=torch.long).to(device)
     
     label_pos = features[0].label_pos
-    
-    predictions = model(input_ids[0].unsqueeze(0), segment_ids[0].unsqueeze(0), input_mask[0].unsqueeze(0))
-    probabilities = F.softmax(predictions[0][label_pos], 0).detach().cpu() # vocab size (30522)
-         
-    predicted_index = torch.argmax(probabilities).item()
-    # score = probabilities[predicted_index].item()
-    
-    predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])
-    predicted_text = predicted_token[0]
 
-    return predicted_text, predicted_index, probabilities.tolist()
+    T = 1.0 # temperature
+    P = 1.5 # penalty for repretition token
+
+    with torch.no_grad():
+        predictions = model(input_ids[0].unsqueeze(0), segment_ids[0].unsqueeze(0), input_mask[0].unsqueeze(0))
+
+        ### Heuristics ###
+        predictions[0][label_pos] /= T # temperature
+
+        ans_tokens = answer.lower().split()
+        if len(ans_tokens) == 1 and ans_tokens[0] in tokenizer.vocab:    
+            ans_ids = tokenizer.convert_tokens_to_ids(ans_tokens)
+            predictions[0][label_pos][ans_ids] = -float('inf') # set to zero for answer where the length of token is 1
+
+        # if len(list_qi_idx) < 10:
+            # banned_ids = tokenizer.convert_tokens_to_ids(['.', ',', "'", '?', '[SEP]'])
+            # predictions[0][label_pos][banned_ids] = -float('inf') # set to zero for all banned_words
+            
+        banned_ids = tokenizer.convert_tokens_to_ids(['.', ',', "'", '?', '[SEP]'])
+        predictions[0][label_pos][banned_ids] /= (15 / (len(list_qi_idx) + 1))
+
+        if len(list_qi_idx) != 0:
+            predictions[0][label_pos][list_qi_idx] /= P # penalty for repetition token
+            # predictions[0][label_pos][list_qi_idx] = -float('inf')
+
+        list_wh = ['what', 'which', 'where', 'when', 'who', 'why', 'how', 'whom', 'whose']
+        if len(list_qi_idx) == 0 and wh_word.lower() in list_wh:
+            list_wh.remove(wh_word.lower())
+        list_wh_ids = tokenizer.convert_tokens_to_ids(list_wh)
+        predictions[0][label_pos][list_wh_ids] = -float('inf') # set to zero for all wh-words except for input wh_word
+        ### Heuristics ###
+
+        probabilities = F.softmax(predictions[0][label_pos], 0).detach().cpu() # vocab size (30522)
+            
+        predicted_index = torch.argmax(probabilities).item()
+        # score = probabilities[predicted_index].item()
+        
+        predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])
+        predicted_text = predicted_token[0]
+
+        return predicted_text, predicted_index, probabilities.tolist()

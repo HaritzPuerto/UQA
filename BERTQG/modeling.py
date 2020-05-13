@@ -33,7 +33,7 @@ from torch import nn
 from torch.nn import CrossEntropyLoss, KLDivLoss, Softmax
 from torch.functional import F
 
-from file_utils import cached_path
+from .file_utils import cached_path
 
 logger = logging.getLogger(__name__)
 
