@@ -81,7 +81,7 @@ def _is_whitespace(c):
     return False
 
 
-def squad_convert_example_to_features(example, max_seq_length, doc_stride, max_query_length, is_training):
+def squad_convert_example_to_features(example, tokenizer, max_seq_length, doc_stride, max_query_length, is_training):
     features = []
     if is_training and not example.is_impossible:
         # Get start and end position
@@ -301,24 +301,7 @@ def squad_convert_examples_to_features(
     """
 
     # Defining helper methods
-    features = []
-    threads = min(threads, cpu_count())
-    with Pool(threads, initializer=squad_convert_example_to_features_init, initargs=(tokenizer,)) as p:
-        annotate_ = partial(
-            squad_convert_example_to_features,
-            max_seq_length=max_seq_length,
-            doc_stride=doc_stride,
-            max_query_length=max_query_length,
-            is_training=is_training,
-        )
-        features = list(
-            tqdm(
-                p.imap(annotate_, examples, chunksize=32),
-                total=len(examples),
-                desc="convert squad examples to features",
-                disable=True,
-            )
-        )
+    features = [squad_convert_example_to_features(examples[0], tokenizer, max_seq_length, doc_stride, max_query_length, is_training)]
     new_features = []
     unique_id = 1000000000
     example_index = 0

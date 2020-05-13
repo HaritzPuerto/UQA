@@ -152,25 +152,26 @@ class Regularizer_Discriminator:
             self.doc_stride,
             self.max_query_length,
         )
-        pred_id = dataset_pred[0]
-        pred_mask = dataset_pred[1]
-        pred_seg = dataset_pred[2]
-        pred_data = TensorDataset(pred_id, pred_mask, pred_seg)
-        pred_sampler = SequentialSampler(pred_data)
-        pred_dataloader = DataLoader(pred_data, sampler=pred_sampler, batch_size=10)
-        #pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
-        result_list = []
-        for batch in pred_dataloader:
-            batch = tuple(t.to(self.device) for t in batch)
-            result = self.model.forward_prob(batch[0], batch[1], batch[2])
-            result_list += result
-        qi_probs = np.asarray(result_list)
-        # qi_probs: [batchsize,2] ndarray
-        qi_class = np.argmax(
-            qi_probs, axis=1
-        )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
-        qi_class = qi_class[0]  # For now, let's assume batch = 1
-        return 1 - qi_class #0: UQA, 1: LM -> 0: choose LM, 1: choose UQA
+        with torch.no_grad():
+            pred_id = dataset_pred[0]
+            pred_mask = dataset_pred[1]
+            pred_seg = dataset_pred[2]
+            pred_data = TensorDataset(pred_id, pred_mask, pred_seg)
+            pred_sampler = SequentialSampler(pred_data)
+            pred_dataloader = DataLoader(pred_data, sampler=pred_sampler, batch_size=10)
+            #pred_epoch_iterator = tqdm(pred_dataloader, desc="dev_Iteration")
+            result_list = []
+            for batch in pred_dataloader:
+                batch = tuple(t.to(self.device) for t in batch)
+                result = self.model.forward_prob(batch[0], batch[1], batch[2])
+                result_list += result
+            qi_probs = np.asarray(result_list)
+            # qi_probs: [batchsize,2] ndarray
+            qi_class = np.argmax(
+                qi_probs, axis=1
+            )  # qi_class: [batchsize,] ndarray 0:should generate UQA, 1:should generate LM
+            qi_class = qi_class[0]  # For now, let's assume batch = 1
+            return 1 - qi_class #0: UQA, 1: LM -> 0: choose LM, 1: choose UQA
     
     def __convert2squad(self, context: str, answer: str, ans_start: int,  question: str) -> dict:
         '''
