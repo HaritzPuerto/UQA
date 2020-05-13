@@ -20,4 +20,5 @@ echo "/n#################################"
 echo "Downloading discri_model_partial_perturb..." 
 wget -O discri_model_partial_perturb.bin "https://s3.us-west-2.amazonaws.com/secure.notion-static.com/eeaf3990-7df8-4f08-aaea-01b6994fe745/discri_model_partial_perturb.bin?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200512%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200512T151610Z&X-Amz-Expires=86400&X-Amz-Signature=72a7e96012d42e5bad765b4c086e1084ca2167459200d859b3683c16ec1e06df&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22discri_model_partial_perturb.bin%22"
 
+mkdir models
 mv discri_model_partial_perturb.bin models/
