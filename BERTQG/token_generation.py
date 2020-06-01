@@ -318,7 +318,7 @@ def generate_token(model, tokenizer, device, wh_word, list_qi_idx, context, ques
     label_pos = features[0].label_pos
 
     T = 1.0 # temperature
-    P = 1.5 # penalty for repretition token
+    P = 1.5 # penalty for repetition token
 
     with torch.no_grad():
         predictions = model(input_ids[0].unsqueeze(0), segment_ids[0].unsqueeze(0), input_mask[0].unsqueeze(0))
@@ -331,16 +331,11 @@ def generate_token(model, tokenizer, device, wh_word, list_qi_idx, context, ques
             ans_ids = tokenizer.convert_tokens_to_ids(ans_tokens)
             predictions[0][label_pos][ans_ids] = -float('inf') # set to zero for answer where the length of token is 1
 
-        # if len(list_qi_idx) < 10:
-            # banned_ids = tokenizer.convert_tokens_to_ids(['.', ',', "'", '?', '[SEP]'])
-            # predictions[0][label_pos][banned_ids] = -float('inf') # set to zero for all banned_words
-            
         banned_ids = tokenizer.convert_tokens_to_ids(['.', ',', "'", '?', '[SEP]'])
         predictions[0][label_pos][banned_ids] /= (15 / (len(list_qi_idx) + 1))
 
         if len(list_qi_idx) != 0:
             predictions[0][label_pos][list_qi_idx] /= P # penalty for repetition token
-            # predictions[0][label_pos][list_qi_idx] = -float('inf')
 
         list_wh = ['what', 'which', 'where', 'when', 'who', 'why', 'how', 'whom', 'whose']
         if len(list_qi_idx) == 0 and wh_word.lower() in list_wh:
@@ -352,8 +347,7 @@ def generate_token(model, tokenizer, device, wh_word, list_qi_idx, context, ques
         probabilities = F.softmax(predictions[0][label_pos], 0).detach().cpu() # vocab size (30522)
             
         predicted_index = torch.argmax(probabilities).item()
-        # score = probabilities[predicted_index].item()
-        
+                
         predicted_token = tokenizer.convert_ids_to_tokens([predicted_index])
         predicted_text = predicted_token[0]
 
