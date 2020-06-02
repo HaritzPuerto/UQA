@@ -8,6 +8,9 @@ This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants an
 
       pip install transformers
       pip install torch==1.4
+      pip install packaging
+      pip install tensorboardX
+      pip install boto3
 
 ## Pre-trained models
 1. [Download][model_link] the trained models. This includes copy_type_assistant, lm_type_assistant, student, discriminator, and bert-base-uncased (for BERTQG).
@@ -96,7 +99,7 @@ Make sure that these datasets are in `data/` to execute the following scripts.
   - `assistant_training.py`: a script for training assistants. If the dataset is copy-type, the trained QG would be the copy-type assisant. If, on the other hand, the dataset is is LM-type, then the trained QG would be the LM-type assistant.
   
         python3 assistant_training.py \
-            --bert_model models/bert-base-uncased \
+            --bert_model BERTQG/models/bert-base-uncased \
             --do_train \
             --train_file data/lm_type_train_10k.json \
             --output_dir models/lm_type_assistant/ \
