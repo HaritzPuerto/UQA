@@ -5,11 +5,12 @@ This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants an
 - We use transformers by HuggingFace for BERT.
 
       pip install transformers
+      pip install torch==1.4
 
 ## Pre-trained models
 1. [Download][link] trained models via the following link. This includes copy_type_assistant, lm_type_assistant, student, discriminator, and bert-base-uncased (for BERTQG).
 
-[link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T061832Z&X-Amz-Expires=86400&X-Amz-Signature=2940b25a3fafd7f35ed37abe97afa6870b647bb0f7b8e9c3aa420e8a06a1927c&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22models.zip%22 "Download models"
+[link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T061832Z&X-Amz-Expires=86400&X-Amz-Signature=2940b25a3fafd7f35ed37abe97afa6870b647bb0f7b8e9c3aa420e8a06a1927c&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22all_models.zip%22 "Download models"
 
 2. Once you download models, you should move them as follows:
         
