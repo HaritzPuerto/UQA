@@ -18,8 +18,8 @@ This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants an
         
         unzip all_models.zip
         mkdir models
-        mv all_models/discriminator.bin $CODE_DIR/models/
-        mv all_models/* $CODE_DIR/BERTQG/models/
+        cp -r all_models/discriminator.bin models/
+        cp -r all_models/* BERTQG/models/
         rm -rf all_models
 
 ## Data
