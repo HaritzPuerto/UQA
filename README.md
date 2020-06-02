@@ -8,18 +8,21 @@ This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants an
 
       pip install transformers
       pip install torch==1.4
+      pip install packaging
+      pip install tensorboardX
+      pip install boto3
 
 ## Pre-trained models
 1. [Download][model_link] the trained models. This includes copy_type_assistant, lm_type_assistant, student, discriminator, and bert-base-uncased (for BERTQG).
 
-[model_link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T061832Z&X-Amz-Expires=86400&X-Amz-Signature=2940b25a3fafd7f35ed37abe97afa6870b647bb0f7b8e9c3aa420e8a06a1927c&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22all_models.zip%22 "Download models"
+[model_link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T091539Z&X-Amz-Expires=86400&X-Amz-Signature=880654936dc8a03d3a3d34989ff1b7a0f3d100b4a1eac63afa2cae2a6ef7afcb&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22all_models.zip%22 "Download models"
 
 2. Once you have downloaded the models, you should move them as follows (We assume your current directory is in UQA):
         
         unzip all_models.zip
         mkdir models
-        mv all_models/discriminator.bin $CODE_DIR/models/
-        mv all_models/* $CODE_DIR/BERTQG/models/
+        cp -r all_models/discriminator.bin models/
+        cp -r all_models/* BERTQG/models/
         rm -rf all_models
 
 ## Data
@@ -96,7 +99,7 @@ Make sure that these datasets are in `data/` to execute the following scripts.
   - `assistant_training.py`: a script for training assistants. If the dataset is copy-type, the trained QG would be the copy-type assisant. If, on the other hand, the dataset is is LM-type, then the trained QG would be the LM-type assistant.
   
         python3 assistant_training.py \
-            --bert_model models/bert-base-uncased \
+            --bert_model BERTQG/models/bert-base-uncased \
             --do_train \
             --train_file data/lm_type_train_10k.json \
             --output_dir models/lm_type_assistant/ \
