@@ -100,7 +100,7 @@ def main():
         input_file = json.load(f)
 
         output = {'data': [], 'version': 'v1.1'}
-        for article in tqdm(input_file[:10]):
+        for article in tqdm(input_file[:]):
             for paragraph in article['paragraphs']:
                 for question in paragraph['qas']:
                     qid = question['id']
