@@ -12,7 +12,7 @@ This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants an
 ## Pre-trained models
 1. [Download][model_link] the trained models. This includes copy_type_assistant, lm_type_assistant, student, discriminator, and bert-base-uncased (for BERTQG).
 
-[model_link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T061832Z&X-Amz-Expires=86400&X-Amz-Signature=2940b25a3fafd7f35ed37abe97afa6870b647bb0f7b8e9c3aa420e8a06a1927c&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22all_models.zip%22 "Download models"
+[model_link]: https://s3.us-west-2.amazonaws.com/secure.notion-static.com/b3dba4b2-4ff6-42f3-bc89-22f80b17a448/models.zip?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=AKIAT73L2G45O3KS52Y5%2F20200602%2Fus-west-2%2Fs3%2Faws4_request&X-Amz-Date=20200602T091539Z&X-Amz-Expires=86400&X-Amz-Signature=880654936dc8a03d3a3d34989ff1b7a0f3d100b4a1eac63afa2cae2a6ef7afcb&X-Amz-SignedHeaders=host&response-content-disposition=filename%20%3D%22all_models.zip%22 "Download models"
 
 2. Once you have downloaded the models, you should move them as follows (We assume your current directory is in UQA):
         
