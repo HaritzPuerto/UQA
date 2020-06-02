@@ -1,4 +1,6 @@
 # Regularization of Distinct Strategies for Unsupervised Question Generation
+We propose a novel regularization method for avoiding a bias toward a particular question generation strategy and modulating the process of generating individual words when a question is generated.
+
 This repo provides codes for BERT-QA (by Hugginface), BERT-QG (Two assistants and Student), and Discriminator.
 
 ## Installation & Dependency
